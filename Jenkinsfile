@@ -91,6 +91,25 @@ pipeline {
               --license-info "${env.LICENSE_IDENTIFIER}" \
               --content S3Bucket=${env.AWS_BUCKET_NAME},S3Key=${env.LAYER_NAME}-lambda-layer.zip
           """.stripIndent()
+
+          withCredentials([string(credentialsId: '92c99606-a8c6-44cc-9f67-718f3dfea120', variable: 'LAYER_UPDATER_ARN')]) {
+            // note: we're ignoring the response.json contents deliberately
+            script {
+              def payload = [
+                runtime: 'python' + PYTHON_VERSION,
+                layer_name: env.LAYER_NAME + '-lambda-layer'
+              ]
+              writeJSON file: './payload.json', json: payload
+              sh """
+                aws lambda invoke \
+                  --region ${env.AWS_REGION} \
+                  --function-name "${env.LAYER_UPDATER_ARN}" \
+                  --invocation-type Event \
+                  --payload fileb://./payload.json \
+                  response.json
+              """.stripIndent()
+            }
+          }
         }
       }
     }
