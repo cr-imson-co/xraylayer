@@ -55,6 +55,7 @@ pipeline {
         sh """
           pip install \
             --no-cache \
+            --progress-bar off \
             -r ${env.WORKSPACE}/build/requirements.txt \
             -t ${env.WORKSPACE}/build/python/lib/python${PYTHON_VERSION}/site-packages/.
         """.stripIndent()
