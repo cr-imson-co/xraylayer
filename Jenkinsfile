@@ -29,7 +29,7 @@ pipeline {
   }
   agent {
     docker {
-      image "docker.cr.imson.co/python-lambda-layer-builder:${PYTHON_VERSION}"
+      image "docker.cr.imson.co/python-lambda-builder:${PYTHON_VERSION}"
     }
   }
   environment {
